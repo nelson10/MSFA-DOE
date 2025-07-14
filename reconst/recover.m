@@ -9,4 +9,16 @@ for i=1:K
 end
 Xrec(Xrec<=0)=0;
 Xrec(Xrec>=dynamicRange)=dynamicRange;
+
+for i=1:K
+    for l=1:L
+        Xrec(:,:,l,i) = norm01(Xrec(:,:,l,i));
+    end
+end
+end
+
+function x = norm01(x)
+mini=min(x,[],"all");
+maxi=max(x,[],"all");
+x=(x-mini)/(maxi-mini);
 end
