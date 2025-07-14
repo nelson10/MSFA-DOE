@@ -1,4 +1,4 @@
-function [vgaptv] = reconstruction(Y,T,orig)
+function [vgaptv] = reconstruction(Y,T,orig,shifting)
 D = size(Y,3);
 
 para.nframe =   1; % number of coded frames in this test
@@ -25,5 +25,27 @@ para.tviter   =  10; % number of iteration for TV denoising
 parfor l=1:D
     [vgaptv(:,:,:,l),psnr_gaptv,ssim_gaptv,tgaptv] = gapdenoise_cacti(T,Y(:,:,l),orig(:,:,:,l),[],para);
 end
+
+if(shifting==1)
+    [M,N1,L,D] = size(vgaptv);
+    Xrec = zeros(M,N1-L+1,L,D);
+    %ground = zeros(M,N1-L+1,L);
+    for l=1:D
+        for i=1:L
+            Xrec(:,:,i,l) =  vgaptv(:,(i-1)+1:(i-1)+M,i,l);
+            %ground(:,:,i) =  orig(:,(i-1)+1:(i-1)+M,i);
+            temp = Xrec(:,:,i,l) < 0;
+            Xrec(:,:,i,l) = Xrec(:,:,i,l).*~temp;
+            Xrec(:,:,i,l) = norm01(Xrec(:,:,i,l));
+        end
+    end
+    vgaptv = Xrec;
+end
 %save('datos.m',vgaptv);
+end
+
+function x = norm01(x)
+mini=min(x,[],"all");
+maxi=max(x,[],"all");
+x=(x-mini)/(maxi-mini);
 end
