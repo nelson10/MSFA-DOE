@@ -28,7 +28,8 @@ N = round(2*r/doe_pitch);  % Number of grid points per side   %2464
 sigma_d = 3e-8;
 sigma_s = [0.005, 0.009, 0.015, 0.020];
 sigma = sigma_s(2);
-algo = 1; %deblurring algorithm, 1 Richarson Lucy, 2 L2-TV
+shifting = 1; % 0 MSFA, 1 CASSI
+algo = 2; %deblurring algorithm, 1 Richarson Lucy, 2 L2-TV
 ploton = 1; % To depict groundtruth, mesurement, psf, Doe, Wiener filter recovery
 showMTF = 1; % 1 To show MTF otherwise PSF#
 dynamicRange = 2^8-1;
@@ -57,16 +58,21 @@ for i=1:5
         load(dataset);
         I = mat2gray(double(hyperimg))*dynamicRange;
         [Y_md] = DOE_effect(I,PSF,deltaS);
-        [Y,Y_orig] = CASSI(Y_md,T,sigma);
-        [Xrec] = recover(Y,T);
-        %[Xrec] = reconstruction(Y,T,I_orig); % GAP-TV to recover the multispectral datacube
+        [Y,I_orig,T1,I2] = Sensor(Y_md,T,sigma,shifting);
+        
+        if(shifting==1)
+            [Xrec] = reconstruction(Y,T1,I2,shifting);
+        else
+            [Xrec] = recover(Y,T);
+            %[Xrec] = reconstruction(Y,T1,I_orig,shifting); % GAP-TV to recover the multispectral datacube
+        end
         X = debluring(Xrec,PSF,algo); %Y_orig
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Metrics %%%%%%%%%%%%%%%%%%%%%%%%%%
         disp("Dataset="+num2str(l))
         for k=1:4
             [p(l,k),s(l,k),sam(l,k)] = metrics2(uint8(I),uint8(X(:,:,:,k)));
         end
-        %showPlot2(I,X,Y_md,DOE,PSF,l,showMTF,ploton,algo);
+        showPlot2(I,X,Y_md,DOE,PSF,l,showMTF,ploton,algo);
     end
 
     pm = mean(mean(p,2));
