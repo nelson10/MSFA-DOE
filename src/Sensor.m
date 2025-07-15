@@ -34,10 +34,9 @@ for j=1:D
     [m1,n1,~] = size(Y);
     noise = normrnd(0,sigma,[m1,n1]);
     y1 = Y(:,:,j) +  noise;
-    y1 = y1.*dynamicRange;
     y1(y1<=0)=0;
-    y1(y1>=dynamicRange) = dynamicRange;
-    Y(:,:,j) = y1;
+    y1(y1>=1) = 1;
+    Y(:,:,j) = y1.*dynamicRange;
 end
 
 % noise = normrnd(0,sigma,[N1,N1]);
