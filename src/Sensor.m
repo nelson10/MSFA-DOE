@@ -30,10 +30,11 @@ end
 
 for j=1:D
     Y1 = I2(:,:,:,j).*T2;
-    Y(:,:,j) = mat2gray(sum(Y1,3)).*dynamicRange;
+    Y(:,:,j) = mat2gray(sum(Y1,3));
     [m1,n1,~] = size(Y);
     noise = normrnd(0,sigma,[m1,n1]);
     y1 = Y(:,:,j) +  noise;
+    y1 = y1.*dynamicRange;
     y1(y1<=0)=0;
     y1(y1>=dynamicRange) = dynamicRange;
     Y(:,:,j) = y1;
