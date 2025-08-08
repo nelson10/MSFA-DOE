@@ -1,14 +1,7 @@
 function [X_unblur] = debluring(X,PSF,algo)
 [~,Ns,L,K] = size(PSF);
-PSF1 = zeros(Ns,Ns,L,K);
 X_unblur = zeros(Ns,Ns,L,K);
 dynamicRange = 2^8-1;
-
-% for k=1:K
-%     for l=1:L
-%         PSF1(:,:,l,k) = imresize(PSF(:,:,l,k),[Ns Ns],"box");
-%     end
-% end
 
 X = imresize(X,[Ns Ns],"box");
 PSF1 = PSF;
