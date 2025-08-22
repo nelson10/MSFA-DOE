@@ -6,4 +6,8 @@ For our simulation we use the CAVE Dataset:
 
 https://cave.cs.columbia.edu/repository/Multispectral
 
+To run our simulator use:
+
+main_multispectral.m
+
 ## 
