@@ -1,6 +1,6 @@
-function [PSF,deltaS] = computePSF2(DOE)
+function [PSF,deltaS] = computePSF2(DOE,L)
 a = 1e0; % 1e0 [m]  1e3 [mm]
-z = [0.5 1.0 2.0 inf].*a; %
+z = [0.5 0.75 1.0 1.5 2.0 inf].*a; %
 r = 2.5e-3.*a; % radius of the pupil % 2.5e-3 or 3.0e-3
 doe_pitch = 2.0292e-6;%1.86e-6; % DOE pitch
 N = round(2*r/doe_pitch);  % Number of grid points per side   %2464
@@ -8,7 +8,7 @@ Ns = round(N/2);
 M = N;
 rng(0);
 
-wln = linspace(6.11e-7,4.82e-7,31).*a;  %wavelength [m]
+wln = linspace(6.11e-7,4.82e-7,L).*a;  %wavelength [m]
 L = size(wln,2); % Number of channels
 n_lambda = linspace(1.457,1.463,L);%[1.457 1.460 1.463];  % wavelength-dependent refractive index
 %zi = 0.0369.*a;  % focal lenght from CMOS to DOE
