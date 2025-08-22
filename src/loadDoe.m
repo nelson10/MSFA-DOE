@@ -1,4 +1,4 @@
-function d = loadDoe(diffractive,N,sigma_d,doe_pitch)
+function [d,doeName] = loadDoe(diffractive,N,sigma_d,doe_pitch)
 rng("default")
 height_max = 1.3745e-6; %2.4e-6;
 if(diffractive == 0)
@@ -13,11 +13,14 @@ if(diffractive == 0)
     d = mod(d*N1 , N1);
     d = floor(d);
     d = mat2gray(d) .* height_max; %2.4e-6;
+    doeName = "Akpinar";
 elseif(diffractive == 1)
     % load('MTF_cubic_zeni_-0.3_10.mat'); % 25.5379
     %load('MTF_cubic_zeni_0.1_10_94'); % 25.9567
     %load('MTF_cubic_zeni_0.1_10_best') % 23.8863
-    load('MTF_cubic_zeni_0.1_10_previous') % 25.9792
+    %load("/Users/nelsondiaz/Downloads/MSFA-DOE-main/DOEs/MTF_cubic_zeni_0.1_10_previous.mat") % 25.9792
+    %load("/Users/nelsondiaz/Downloads/MSFA-DOE-main/DOEs/MTF_cubic_zeni_0.1_10_sum_std_per_depth_115_zernikes.mat")
+    load("MTF_cubic_zeni_0.1_10_sum_std_per_depth_115_zernikes_double-vol.mat")
     %load('MTF_cubic_zeni_-0.3_10.mat') % 25.5379
     %load('MTF_cubic_zeni_0.4_40') % 25.4165
     %load('MTF_helical_zeni_0.1_10'); % 27.7628
@@ -30,13 +33,15 @@ elseif(diffractive == 1)
     d = mod(d*N1 , N1);
     d = floor(d);
     d = mat2gray(d) .* height_max;
+    doeName = "Diaz";
 elseif(diffractive == 2)
     %Paper: Compact Snapshot Hyperspectral Imaging with Diffracted Rotation
     %Authors: Jeon, Baek, Yi, Dun, Fu, Heidrich, and Kim
     load('spiral_DOE3180_16.mat');
     d = h;
     d = imresize(d,[N N],"nearest");
-    d = mat2gray(d).*0.9e-06;
+    d = mat2gray(d).*height_max;%0.9e-06;
+    doeName = "Spiral-Jeon";
 elseif(diffractive == 3)
     alpha = 10*pi; % 5 10 -> inf % 10 d= 1-d -> 0.5 0.8
     M = 1800;
@@ -58,6 +63,7 @@ elseif(diffractive == 3)
     %load('Uniform-DOE_1800-fres-0.5-0.8.mat')
 elseif(diffractive == 4)
     d = zeros(N,N);
+    doeName =  "without-DOE";
 elseif(diffractive == 5)
     %Paper: Extended depth of field through wave-front coding
     % %AuthorS: Edward R. Dowski, Jr., and W. Thomas Cathey
@@ -76,6 +82,7 @@ elseif(diffractive == 5)
     d = mod(d*N1 , N1);
     d = floor(d);
     d = mat2gray(d) .* height_max;
+    doeName = "Dowski-Cathey";
     %save('./DOEs/Dowski-Cathey_test.mat','d')
     %load('Dowski-Cathey_test.mat')
     %imagesc(d1-mat2gray(d)*height_max)
@@ -90,6 +97,7 @@ elseif(diffractive==6)
     d0 = imresize(d0, [N, N], 'nearest');
     d = (d0 - min(d0(:))) / (max(d0(:)) - min(d0(:)));
     d = d * height_max;
+    doeName = "Oliva";
 elseif(diffractive==8)
     load('Phase_delay_profile_6mm.mat');  % no full
     G3 = Phase_delay_profile_6mm_crop_middle;
@@ -109,6 +117,7 @@ elseif(diffractive==8)
     d = mod(d*N1 , N1);
     d = floor(d);
     d = mat2gray(d) .* height_max;
+    doeName = "Pinilla";
 elseif(diffractive==7)
     %CGH for generation and focusing of a helical wavefront
     L=1; % number of spirals
