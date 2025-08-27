@@ -27,20 +27,22 @@ doe_pitch = 2.0292e-6;%1.86e-6; % DOE pitch
 N = round(2*r/doe_pitch);  % Number of grid points per side   %2464
 sigma_d = 3e-8;
 sigma_s = [0 0.005, 0.009, 0.015, 0.020];
-sigma = sigma_s(1);
+sigma_id = 1;
+sigma = sigma_s(sigma_id);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 detector = 2; % 0 MSFA, 1 CASSI, 2 Pushbroom, 3 RGB
 algo = 1; %deblurring algorithm, 1 Richarson Lucy, 2 L2-TV
+Algorithm = ["RL","L2-TV"];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ploton = 0; % To depict groundtruth, mesurement, psf, Doe, Wiener filter recovery
 showMTF = 1; % 1 To show MTF otherwise PSF#
 dynamicRange = 2^8-1;
 
-N1 = 512;
+N1 = N/2;
 L = 31;
-idx = [1 0 5 8 6 4];%[7 1 0 5 6 8];
+idx = [6 0 5 8 6 4 1];%[7 1 0 5 6 8];
 
 for i=1:6
     diffractive = idx(i); %0 Akpinar TIP-2021, 1 Diaz, 2 Spiral-Jeon, 3 Fresnel, 4 without DOE, 5 Dowski-Cathey,6 Oliva,7 Helical axicon, 8 Pinilla et al
@@ -66,7 +68,6 @@ for i=1:6
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Metrics %%%%%%%%%%%%%%%%%%%%%%%%%%
         disp("Dataset="+num2str(l))
         I = imresize(I,[Ns Ns],"box");
-        K = size(p,2);
         for k=1:K
             [p(l,k),s(l,k),sam(l,k)] = metrics2(uint8(I),uint8(X(:,:,:,k)));
         end
@@ -93,7 +94,7 @@ for i=1:6
     std_SAM  = mean(SAM_std);
     varNames = {'dist', 'PSNR_avg', 'PSNR_std', 'SSIM_avg', 'SSIM_std', 'SAM_avg', 'SAM_std'};
     Tabla = table(dist', [PSNR_mean avg_PSNR]',[PSNR_std std_PSNR]' , [SSIM_mean avg_SSIM]', [SSIM_std std_SSIM]', [SAM_mean avg_SAM]', [SAM_std std_SAM]', 'VariableNames',varNames )
-    writetable(Tabla, names_sensor(shifting+1) +"_"+names_DOE(DOE_idx)+"_"+Algorithm(algo)+"_sigmaID_"+num2str(sigma_id)+"_full.csv")
+    writetable(Tabla, detectorName +"_"+doeName+"_"+Algorithm(algo)+"_sigmaID_"+num2str(sigma_id)+"_full.csv")
 end
 
 % X = double(X);
